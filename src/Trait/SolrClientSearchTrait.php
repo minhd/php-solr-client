@@ -3,7 +3,6 @@
 
 namespace MinhD\SolrClient;
 
-
 trait SolrClientSearchTrait
 {
     private $searchParams = [
@@ -15,7 +14,8 @@ trait SolrClientSearchTrait
 
     /**
      * @param string $query
-     * @return mixed
+     *
+     * @return SolrSearchResult
      */
     public function query($query)
     {
@@ -26,13 +26,15 @@ trait SolrClientSearchTrait
 
     /**
      * @param mixed $parameters
-     * @return mixed
+     *
+     * @return SolrSearchResult
      */
     public function search($parameters)
     {
         $this->result = null;
         $result = $this->request('GET', $this->getCore().'/select', $parameters);
         $this->result = new SolrSearchResult($result, $this);
+
         return $this->result;
     }
 
@@ -54,23 +56,39 @@ trait SolrClientSearchTrait
         return $this->searchParams;
     }
 
+    public function getSearchParam($name)
+    {
+        return array_key_exists($name, $this->searchParams) ? $this->searchParams[$name] : null;
+    }
+
+    public function setFacet($name)
+    {
+        if ($this->getSearchParam('facet') === null) {
+            $this->setSearchParams('facet', 'true');
+        }
+
+        $this->setSearchParams('facet.field', $name);
+
+        return $this;
+    }
+
     /**
      * @param string $name
      * @param string $value
+     *
      * @return $this
      */
     public function setSearchParams($name, $value)
     {
         $this->searchParams[$name] = $value;
+
         return $this;
     }
 
     /**
-     * @return null
      */
     public function getResult()
     {
         return $this->result;
     }
-
 }

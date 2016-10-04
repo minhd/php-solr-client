@@ -3,7 +3,6 @@
 
 namespace MinhD\SolrClient;
 
-
 class SolrSearchClientSearchTraitTest extends \PHPUnit_Framework_TestCase
 {
     /** @test **/
@@ -21,7 +20,7 @@ class SolrSearchClientSearchTraitTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, $result->getNumFound());
         $this->assertEquals(1, $docs[0]->id);
 
-        $solr->remove([1,2]);
+        $solr->remove([1, 2]);
     }
 
     /** @test **/
@@ -44,8 +43,31 @@ class SolrSearchClientSearchTraitTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(100, $result->getNumFound());
         $this->assertEquals(10, $result->getParam('start'));
 
-        $solr->removeByQuery("*:*");
+        $solr->removeByQuery('*:*');
+        $solr->commit();
+    }
+
+    /** @test **/
+    public function it_should_search_and_facet_correctly()
+    {
+        $solr = new SolrClient('localhost', 8983, 'gettingstarted');
+
+        // add 100 document with even and odd
+        for ($i = 1; $i < 16; $i++) {
+            $solr->add(new SolrDocument([
+                'id' => $i,
+                'title' => 'test:'.$i,
+                'subject' =>  ($i % 2 == 0) ? 'even' : 'odd'
+            ]));
+        }
         $solr->commit();
 
+        $result = $solr->setFacet('subject')->query('*:*');
+        $subjectFacetFields = $result->getFacetField('subject');
+        $this->assertEquals(7, $subjectFacetFields['even']);
+        $this->assertEquals(8, $subjectFacetFields['odd']);
+
+        $solr->removeByQuery('*:*');
+        $solr->commit();
     }
 }
