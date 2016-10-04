@@ -144,6 +144,18 @@ class SolrClient
     }
 
     /**
+     * @param bool|mixed $core
+     * @return mixed
+     */
+    public function optimize($core = null)
+    {
+        if ($core === null) {
+            $core = $this->getCore();
+        }
+        return $this->request('GET', $core.'/update', ['optimize'=>'true']);
+    }
+
+    /**
      * @param string $method
      * @param string $path
      * @param array  $query

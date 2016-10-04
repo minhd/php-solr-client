@@ -79,6 +79,15 @@ class SolrClientTest extends PHPUnit_Framework_TestCase
     }
 
     /** @test **/
+    public function it_should_optimize()
+    {
+        $solr = new SolrClient('localhost', 8983, 'gettingstarted');
+        $result = $solr->optimize();
+        $this->assertEquals(0, $result['responseHeader']['status']);
+        $this->assertTrue(true);
+    }
+
+    /** @test **/
     public function it_should_add_and_commit()
     {
         $solr = new SolrClient('localhost', 8983, 'gettingstarted');
