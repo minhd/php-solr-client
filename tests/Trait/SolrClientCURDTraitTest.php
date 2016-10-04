@@ -3,7 +3,6 @@
 
 namespace MinhD\SolrClient;
 
-
 class SolrClientCURDTraitTest extends \PHPUnit_Framework_TestCase
 {
     /** @test **/
@@ -59,14 +58,14 @@ class SolrClientCURDTraitTest extends \PHPUnit_Framework_TestCase
         // get the document right away, make sure it's there
         $doc = $solr->get(1);
         $this->assertNotNull($doc);
-        $this->assertEquals(["test"], $doc->title);
+        $this->assertEquals(['test'], $doc->title);
 
         // update
-        $solr->update(1, ["title"=>"changed"]);
+        $solr->update(1, ['title' => 'changed']);
 
         $doc = $solr->get(1);
         $this->assertNotNull($doc);
-        $this->assertEquals(["changed"], $doc->title);
+        $this->assertEquals(['changed'], $doc->title);
 
         // cleanup
         $solr->remove(1);

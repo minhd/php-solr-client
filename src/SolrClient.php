@@ -4,7 +4,6 @@ namespace MinhD\SolrClient;
 
 use GuzzleHttp\Client as HttpClient;
 
-
 class SolrClient
 {
     private $host;
@@ -74,12 +73,9 @@ class SolrClient
         );
     }
 
-
-
-
-
     /**
      * @param bool|mixed $core
+     *
      * @return mixed
      */
     public function optimize($core = null)
@@ -87,7 +83,8 @@ class SolrClient
         if ($core === null) {
             $core = $this->getCore();
         }
-        return $this->request('GET', $core.'/update', ['optimize'=>'true']);
+
+        return $this->request('GET', $core.'/update', ['optimize' => 'true']);
     }
 
     /**

@@ -8,8 +8,6 @@ namespace MinhD\SolrClient;
  * read = get
  * update = update
  * delete = remove
- *
- * @package MinhD\SolrClient
  */
 trait SolrClientCRUDTrait
 {
@@ -59,8 +57,9 @@ trait SolrClientCRUDTrait
     }
 
     /**
-     * @param int $id
+     * @param int   $id
      * @param array $content
+     *
      * @return mixed
      */
     public function update($id, $content)
@@ -68,7 +67,9 @@ trait SolrClientCRUDTrait
         $content['id'] = $id;
 
         $result =  $this->request(
-            'POST', $this->getCore(). '/update/json', [],
+            'POST',
+            $this->getCore(). '/update/json',
+            [],
             [
                 'add' => [
                     'doc' => $content
