@@ -4,6 +4,7 @@ namespace MinhD\SolrClient;
 
 use GuzzleHttp\Client as HttpClient;
 
+
 class SolrClient
 {
     private $host;
@@ -13,6 +14,8 @@ class SolrClient
 
     private $path = 'solr';
     private $autoCommit = false;
+
+    use SolrClientCRUDTrait;
 
     /**
      * SolrClient constructor.
@@ -60,31 +63,6 @@ class SolrClient
     }
 
     /**
-     * @param SolrDocument $document
-     *
-     * @return mixed
-     */
-    public function add(SolrDocument $document)
-    {
-        $result = $this->request(
-            'POST',
-            $this->getCore() . '/update/json',
-            [],
-            [
-                'add' => [
-                    'doc' => $document->toArray()
-                ]
-            ]
-        );
-
-        if ($this->isAutoCommit()) {
-            $this->commit();
-        }
-
-        return $result;
-    }
-
-    /**
      * @return mixed
      */
     public function commit()
@@ -96,52 +74,9 @@ class SolrClient
         );
     }
 
-    /**
-     * @param array $ids
-     *
-     * @return mixed
-     */
-    public function remove($ids = [])
-    {
-        if (!is_array($ids)) {
-            $ids = [$ids];
-        }
 
-        $result = $this->request(
-            'POST',
-            $this->getCore() . '/update/json',
-            [],
-            [
-                'delete' => $ids
-            ]
-        );
 
-        if ($this->isAutoCommit()) {
-            $this->commit();
-        }
 
-        return $result;
-    }
-
-    /**
-     * @param int $id
-     *
-     * @return SolrDocument|null
-     */
-    public function get($id)
-    {
-        $result = $this->request('GET', $this->getCore() . '/select', [
-            'q' => 'id:' . $id
-        ]);
-
-        if (array_key_exists(0, $result['response']['docs'])) {
-            $doc = $result['response']['docs'][0];
-
-            return new SolrDocument($doc);
-        }
-
-        return null;
-    }
 
     /**
      * @param bool|mixed $core
