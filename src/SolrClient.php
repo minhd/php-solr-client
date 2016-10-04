@@ -18,7 +18,7 @@ class SolrClient
      * SolrClient constructor.
      *
      * @param string $host
-     * @param int $port
+     * @param int    $port
      * @param string $core
      */
     public function __construct(
@@ -26,7 +26,6 @@ class SolrClient
         $port = 8983,
         $core = 'collection1'
     ) {
-
         $this->host = $this->cleanHost($host);
         $this->port = $port;
 
@@ -62,8 +61,8 @@ class SolrClient
 
     /**
      * @param SolrDocument $document
-     * @return mixed
      *
+     * @return mixed
      */
     public function add(SolrDocument $document)
     {
@@ -99,6 +98,7 @@ class SolrClient
 
     /**
      * @param array $ids
+     *
      * @return mixed
      */
     public function remove($ids = [])
@@ -146,8 +146,8 @@ class SolrClient
     /**
      * @param string $method
      * @param string $path
-     * @param array $query
-     * @param array $body
+     * @param array  $query
+     * @param array  $body
      *
      * @return mixed
      */
@@ -233,11 +233,13 @@ class SolrClient
 
     /**
      * @param boolean $autoCommit
+     *
      * @return SolrClient
      */
     public function setAutoCommit($autoCommit)
     {
         $this->autoCommit = $autoCommit;
+
         return $this;
     }
 
