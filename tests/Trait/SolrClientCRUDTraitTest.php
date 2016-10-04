@@ -3,7 +3,7 @@
 
 namespace MinhD\SolrClient;
 
-class SolrClientCURDTraitTest extends \PHPUnit_Framework_TestCase
+class SolrClientCRUDTraitTest extends \PHPUnit_Framework_TestCase
 {
     /** @test **/
     public function round_trip()
@@ -75,5 +75,27 @@ class SolrClientCURDTraitTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($doc);
 
         $this->assertTrue(true);
+    }
+
+    /** @test **/
+    public function it_should_delete_by_query_condition()
+    {
+        $solr = new SolrClient('localhost', 8983, 'gettingstarted');
+
+        // add 100 document
+        for ($i = 0; $i < 100; $i++) {
+            $solr->add(new SolrDocument(['id' => $i, 'title' => 'test']));
+        }
+        $solr->commit();
+
+        $result = $solr->query('title:test');
+
+        $this->assertEquals(100, $result->getNumFound());
+
+        $solr->removeByQuery("title:test");
+        $solr->commit();
+
+        $result = $solr->query('*:*');
+        $this->assertEquals(0, $result->getNumFound());
     }
 }

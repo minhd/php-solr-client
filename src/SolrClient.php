@@ -15,6 +15,7 @@ class SolrClient
     private $autoCommit = false;
 
     use SolrClientCRUDTrait;
+    use SolrClientSearchTrait;
 
     /**
      * SolrClient constructor.

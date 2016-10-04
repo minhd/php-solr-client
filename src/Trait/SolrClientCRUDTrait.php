@@ -110,4 +110,24 @@ trait SolrClientCRUDTrait
 
         return $result;
     }
+
+    public function removeByQuery($query)
+    {
+        $result = $this->request(
+            'POST',
+            $this->getCore() . '/update/json',
+            [],
+            [
+                'delete' => [
+                    'query' => $query
+                ]
+            ]
+        );
+
+        if ($this->isAutoCommit()) {
+            $this->commit();
+        }
+
+        return $result;
+    }
 }
