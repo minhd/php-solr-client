@@ -223,7 +223,7 @@ class SolrClient
      */
     public function hasError()
     {
-        return count($this->getErrors() > 0) ? true : false;
+        return count($this->getErrors()) > 0 ? true : false;
     }
 
     /**
