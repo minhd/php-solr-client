@@ -68,6 +68,9 @@
         "solr-remove":[
             "rm -f solr-*.tgz",
             "rm -rf solr-*"
+        ],
+        "coverage": [
+            "open build/coverage/dashboard.html"
         ]
     },
     "extra": {
