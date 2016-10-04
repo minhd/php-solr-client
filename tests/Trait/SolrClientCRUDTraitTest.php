@@ -98,4 +98,21 @@ class SolrClientCRUDTraitTest extends \PHPUnit_Framework_TestCase
         $result = $solr->query('*:*');
         $this->assertEquals(0, $result->getNumFound());
     }
+
+    /** @test **/
+    public function it_should_delete_by_query_condition_auto_commit()
+    {
+        $solr = new SolrClient('localhost', 8983, 'gettingstarted');
+        $solr->setAutoCommit(true);
+
+        $solr->add(new SolrDocument(['id' => 1234, 'title' => 'test']));
+
+        $result = $solr->query('title:test');
+        $this->assertEquals(1, $result->getNumFound());
+
+        $solr->removeByQuery('title:test');
+
+        $result = $solr->query('title:test');
+        $this->assertEquals(0, $result->getNumFound());
+    }
 }

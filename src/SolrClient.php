@@ -17,6 +17,8 @@ class SolrClient
     private $path = 'solr';
     private $autoCommit = false;
 
+    private $errorMessages = [];
+
     use SolrClientCRUDTrait;
     use SolrClientSearchTrait;
 
@@ -52,6 +54,7 @@ class SolrClient
                 'action' => 'status'
             ]);
         } catch (RequestException $e) {
+            $this->logError('Failed to connect with request: '.Psr7\str($e->getRequest()));
             return false;
         }
     }
@@ -105,6 +108,9 @@ class SolrClient
      */
     private function request($method, $path, $query, $body = [])
     {
+        // reset errors
+        $this->errorMessages = [];
+
         $query['wt'] = 'json';
         $request = [
             'Accept' => 'application/json',
@@ -202,5 +208,33 @@ class SolrClient
     public function isAutoCommit()
     {
         return $this->autoCommit;
+    }
+
+    /**
+     * @return array
+     */
+    public function getErrors()
+    {
+        return $this->errorMessages;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasError()
+    {
+        return count($this->getErrors() > 0) ? true : false;
+    }
+
+    /**
+     * @param string $errorMessages
+     *
+     * @return $this
+     */
+    public function logError($errorMessages)
+    {
+        $this->errorMessages[] = $errorMessages;
+
+        return $this;
     }
 }

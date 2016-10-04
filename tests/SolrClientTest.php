@@ -46,6 +46,7 @@ class SolrClientTest extends PHPUnit_Framework_TestCase
         $solr = new SolrClient('somerandomhost', 8080);
         $status = $solr->status();
         $this->assertFalse($status);
+        $this->assertTrue($solr->hasError());
     }
 
     /** @test **/

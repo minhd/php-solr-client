@@ -38,15 +38,6 @@ trait SolrClientSearchTrait
         return $this->result;
     }
 
-    public function getNumFound()
-    {
-        return $this->result['response']['numFound'];
-    }
-
-    public function getDocs()
-    {
-        return $this->result['response']['docs'];
-    }
 
     /**
      * @return array
@@ -56,11 +47,23 @@ trait SolrClientSearchTrait
         return $this->searchParams;
     }
 
+    /**
+     * @param string $name
+     * @return null
+     */
     public function getSearchParam($name)
     {
-        return array_key_exists($name, $this->searchParams) ? $this->searchParams[$name] : null;
+        return array_key_exists($name, $this->searchParams) ?
+            $this->searchParams[$name] : null;
     }
 
+    /**
+     * Set the facet to search on
+     *
+     * @param string $name
+     *
+     * @return $this
+     */
     public function setFacet($name)
     {
         if ($this->getSearchParam('facet') === null) {
@@ -83,12 +86,5 @@ trait SolrClientSearchTrait
         $this->searchParams[$name] = $value;
 
         return $this;
-    }
-
-    /**
-     */
-    public function getResult()
-    {
-        return $this->result;
     }
 }

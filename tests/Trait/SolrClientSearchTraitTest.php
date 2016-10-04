@@ -3,7 +3,7 @@
 
 namespace MinhD\SolrClient;
 
-class SolrSearchClientSearchTraitTest extends \PHPUnit_Framework_TestCase
+class SolrClientSearchTraitTest extends \PHPUnit_Framework_TestCase
 {
     /** @test **/
     public function it_should_search_correctly()
@@ -17,6 +17,9 @@ class SolrSearchClientSearchTraitTest extends \PHPUnit_Framework_TestCase
 
         $result = $solr->query('test');
         $docs = $result->getDocs();
+
+        $this->assertEquals(1, count($docs));
+
         $this->assertEquals(1, $result->getNumFound());
         $this->assertEquals(1, $docs[0]->id);
 
