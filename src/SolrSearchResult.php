@@ -50,6 +50,13 @@ class SolrSearchResult
         }
     }
 
+    /**
+     * Return the next page SolrSearchResult
+     *
+     * @param int $pp
+     *
+     * @return SolrSearchResult
+     */
     public function next($pp = 10)
     {
         $nextPageParams = $this->params;
@@ -58,6 +65,13 @@ class SolrSearchResult
         return $this->client->search($nextPageParams);
     }
 
+    /**
+     * Get facet by field
+     *
+     * @param string $field
+     *
+     * @return mixed
+     */
     public function getFacetField($field)
     {
         return $this->facetFields[$field];

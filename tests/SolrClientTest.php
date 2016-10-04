@@ -41,6 +41,14 @@ class SolrClientTest extends PHPUnit_Framework_TestCase
     }
 
     /** @test **/
+    public function it_should_fail_to_get_status_of_unknown_host()
+    {
+        $solr = new SolrClient('somerandomhost', 8080);
+        $status = $solr->status();
+        $this->assertFalse($status);
+    }
+
+    /** @test **/
     public function it_should_be_able_to_reload_a_core()
     {
         $solr = new SolrClient('localhost', 8983);

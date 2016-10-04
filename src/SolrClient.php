@@ -3,6 +3,9 @@
 namespace MinhD\SolrClient;
 
 use GuzzleHttp\Client as HttpClient;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Psr7;
+use Symfony\Component\Config\Definition\Exception\Exception;
 
 class SolrClient
 {
@@ -44,9 +47,13 @@ class SolrClient
      */
     public function status()
     {
-        return $this->request('GET', 'admin/cores', [
-            'action' => 'status'
-        ]);
+        try {
+            return $this->request('GET', 'admin/cores', [
+                'action' => 'status'
+            ]);
+        } catch (RequestException $e) {
+            return false;
+        }
     }
 
     /**
@@ -109,6 +116,7 @@ class SolrClient
         }
 
         $res = $this->client->request($method, $path, $request);
+
         $result = json_decode($res->getBody()->getContents(), true);
 
         return $result;
