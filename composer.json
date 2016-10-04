@@ -1,0 +1,78 @@
+{
+    "name": "minhd/solr-client",
+    "description": "A PHP Solr Client",
+    "keywords": [
+        "Generator",
+        "PSR"
+    ],
+    "homepage": "https://github.com/minhd/phpgen",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Minh Duc Nguyen",
+            "email": "dekarvn@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "~5.6|~7.0",
+        "guzzlehttp/guzzle": "^6.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.8 || ~5.0",
+        "squizlabs/php_codesniffer": "~2.3",
+        "phpmd/phpmd": "~2.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "MinhD\\SolrClient\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "MinhD\\SolrClient\\": [
+                "tests/"
+            ]
+        }
+    },
+    "scripts": {
+        "test": [
+            "phpmd src text ./phpmd.xml",
+            "phpcs src tests",
+            "phpunit"
+        ],
+        "cs-fix": [
+            "php-cs-fixer fix --config-file=./.php_cs",
+            "phpcbf src"
+        ],
+        "build": [
+            "rm -rf ./build; mkdir -p ./build/logs ./build/pdepend ./build/api",
+            "pdepend --jdepend-xml=./build/logs/jdepend.xml --jdepend-chart=./build/pdepend/dependencies.svg --overview-pyramid=./build/pdepend/overview-pyramid.svg src",
+            "phploc --log-csv ./build/logs/phploc.csv src",
+            "phpcs --report=checkstyle --report-file=./build/logs/checkstyle.xml --standard=phpcs.xml src",
+            "apigen generate -s src -d build/api",
+            "@test"
+        ],
+        "solr-get": [
+            "curl -sSL https://raw.githubusercontent.com/moliware/travis-solr/master/travis-solr.sh | SOLR_VERSION=5.4.0 bash",
+            "rm -f solr-*.tgz"
+        ],
+        "solr-stop": [
+            "solr-5.4.0/bin/solr stop"
+        ],
+        "solr-start-testing": [
+            "solr-5.4.0/bin/solr start -p 8983 -c -e schemaless"
+        ],
+        "solr-start": [
+            "solr-5.4.0/bin/solr start -p 8983 -c"
+        ],
+        "solr-remove":[
+            "rm -f solr-*.tgz",
+            "rm -rf solr-*"
+        ]
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
+    }
+}
