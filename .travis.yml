@@ -14,6 +14,7 @@ cache:
 before_script:
   - composer self-update
   - composer install
+  - composer dump-autoload --optimize
   - composer solr-get
 script:
   - phpunit

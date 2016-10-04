@@ -3,6 +3,9 @@
 namespace MinhD\SolrClient;
 
 use GuzzleHttp\Client as HttpClient;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Psr7;
+use Symfony\Component\Config\Definition\Exception\Exception;
 
 class SolrClient
 {
@@ -13,6 +16,11 @@ class SolrClient
 
     private $path = 'solr';
     private $autoCommit = false;
+
+    private $errorMessages = [];
+
+    use SolrClientCRUDTrait;
+    use SolrClientSearchTrait;
 
     /**
      * SolrClient constructor.
@@ -41,9 +49,14 @@ class SolrClient
      */
     public function status()
     {
-        return $this->request('GET', 'admin/cores', [
-            'action' => 'status'
-        ]);
+        try {
+            return $this->request('GET', 'admin/cores', [
+                'action' => 'status'
+            ]);
+        } catch (RequestException $e) {
+            $this->logError('Failed to connect with request: '.Psr7\str($e->getRequest()));
+            return false;
+        }
     }
 
     /**
@@ -60,31 +73,6 @@ class SolrClient
     }
 
     /**
-     * @param SolrDocument $document
-     *
-     * @return mixed
-     */
-    public function add(SolrDocument $document)
-    {
-        $result = $this->request(
-            'POST',
-            $this->getCore() . '/update/json',
-            [],
-            [
-                'add' => [
-                    'doc' => $document->toArray()
-                ]
-            ]
-        );
-
-        if ($this->isAutoCommit()) {
-            $this->commit();
-        }
-
-        return $result;
-    }
-
-    /**
      * @return mixed
      */
     public function commit()
@@ -97,50 +85,17 @@ class SolrClient
     }
 
     /**
-     * @param array $ids
+     * @param bool|mixed $core
      *
      * @return mixed
      */
-    public function remove($ids = [])
+    public function optimize($core = null)
     {
-        if (!is_array($ids)) {
-            $ids = [$ids];
+        if ($core === null) {
+            $core = $this->getCore();
         }
 
-        $result = $this->request(
-            'POST',
-            $this->getCore() . '/update/json',
-            [],
-            [
-                'delete' => $ids
-            ]
-        );
-
-        if ($this->isAutoCommit()) {
-            $this->commit();
-        }
-
-        return $result;
-    }
-
-    /**
-     * @param int $id
-     *
-     * @return SolrDocument|null
-     */
-    public function get($id)
-    {
-        $result = $this->request('GET', $this->getCore() . '/select', [
-            'q' => 'id:' . $id
-        ]);
-
-        if (array_key_exists(0, $result['response']['docs'])) {
-            $doc = $result['response']['docs'][0];
-
-            return new SolrDocument($doc);
-        }
-
-        return null;
+        return $this->request('GET', $core.'/update', ['optimize' => 'true']);
     }
 
     /**
@@ -153,6 +108,9 @@ class SolrClient
      */
     private function request($method, $path, $query, $body = [])
     {
+        // reset errors
+        $this->errorMessages = [];
+
         $query['wt'] = 'json';
         $request = [
             'Accept' => 'application/json',
@@ -164,6 +122,7 @@ class SolrClient
         }
 
         $res = $this->client->request($method, $path, $request);
+
         $result = json_decode($res->getBody()->getContents(), true);
 
         return $result;
@@ -249,5 +208,33 @@ class SolrClient
     public function isAutoCommit()
     {
         return $this->autoCommit;
+    }
+
+    /**
+     * @return array
+     */
+    public function getErrors()
+    {
+        return $this->errorMessages;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasError()
+    {
+        return count($this->getErrors()) > 0 ? true : false;
+    }
+
+    /**
+     * @param string $errorMessages
+     *
+     * @return $this
+     */
+    public function logError($errorMessages)
+    {
+        $this->errorMessages[] = $errorMessages;
+
+        return $this;
     }
 }

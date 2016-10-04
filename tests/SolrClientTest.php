@@ -41,31 +41,20 @@ class SolrClientTest extends PHPUnit_Framework_TestCase
     }
 
     /** @test **/
+    public function it_should_fail_to_get_status_of_unknown_host()
+    {
+        $solr = new SolrClient('somerandomhost', 8080);
+        $status = $solr->status();
+        $this->assertFalse($status);
+        $this->assertTrue($solr->hasError());
+    }
+
+    /** @test **/
     public function it_should_be_able_to_reload_a_core()
     {
         $solr = new SolrClient('localhost', 8983);
         $result = $solr->reload('gettingstarted_shard1_replica1');
         $this->assertEquals(0, $result['responseHeader']['status']);
-    }
-
-    /** @test **/
-    public function round_trip()
-    {
-        $solr = new SolrClient('localhost', 8983);
-        $solr->setCore('gettingstarted');
-        $document = new SolrDocument(['id' => 12345, 'title' => 'fish']);
-        $result = $solr->add($document);
-        $this->assertEquals(0, $result['responseHeader']['status']);
-        $solr->commit();
-
-        $doc = $solr->get(12345);
-        $doc->id = 12345;
-
-        $solr->remove(12345);
-        $solr->commit();
-
-        $doc = $solr->get(12345);
-        $this->assertNull($doc);
     }
 
     /** @test **/
@@ -79,23 +68,11 @@ class SolrClientTest extends PHPUnit_Framework_TestCase
     }
 
     /** @test **/
-    public function it_should_add_and_commit()
+    public function it_should_optimize()
     {
         $solr = new SolrClient('localhost', 8983, 'gettingstarted');
-        $solr->setAutoCommit(true);
-
-        // add a document, auto commit
-        $solr->add(new SolrDocument(['id' => 1, 'title' => 'test']));
-
-        // get the document right away, make sure it's there
-        $doc = $solr->get(1);
-        $this->assertNotNull($doc);
-
-        // remove the document, auto commit
-        $solr->remove(1);
-
-        // make sure it's gone
-        $doc = $solr->get(1);
-        $this->assertNull($doc);
+        $result = $solr->optimize();
+        $this->assertEquals(0, $result['responseHeader']['status']);
+        $this->assertTrue(true);
     }
 }
