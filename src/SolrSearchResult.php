@@ -17,6 +17,8 @@ class SolrSearchResult
     private $cursorMark = null;
     private $nextCursorMark = null;
 
+    private $raw = null;
+
     /**
      * SolrSearchResult constructor.
      *
@@ -34,6 +36,7 @@ class SolrSearchResult
      */
     public function init($payload)
     {
+        $this->raw = $payload;
         $this->params = $payload['responseHeader']['params'];
         $this->numFound = $payload['response']['numFound'];
 
@@ -96,10 +99,19 @@ class SolrSearchResult
     }
 
     /**
+     * @param string $format
      * @return mixed
      */
-    public function getDocs()
+    public function getDocs($format = 'array')
     {
+        if ($format == 'json') {
+            $filler = [];
+            foreach ($this->docs as $doc) {
+                $filler[] = $doc->toArray();
+            }
+            return json_encode($filler, true);
+        }
+
         return $this->docs;
     }
 
@@ -143,5 +155,18 @@ class SolrSearchResult
     public function getNextCursorMark()
     {
         return $this->nextCursorMark;
+    }
+
+    /**
+     * @param string $format
+     * @return null
+     */
+    public function getRaw($format = 'array')
+    {
+        if ($format == 'json') {
+            return json_encode($this->raw, true);
+        }
+
+        return $this->raw;
     }
 }

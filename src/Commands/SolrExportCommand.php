@@ -50,13 +50,27 @@ class SolrExportCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $source = $input->getOption('source-solr');
+
+        // TODO: do something nifty about source containing the port
+
         $port = $input->getOption('source-solr-port');
         $collection = $input->getOption('source-solr-collection');
         $targetDir = $input->getOption('target-dir');
 
         $solr = new SolrClient($source, $port, $collection);
 
+        // find out how big this is
+        $payload = $solr->search([
+           'q' => '*', 'rows' => '0'
+        ]);
+        $numFound = $payload->getNumFound();
 
+        $output->writeln("There are ".$numFound. " records to export.");
+
+        $payload = $solr->cursor();
+        $documents = $payload->getDocs('json');
+        $next = $payload->getNextCursorMark();
+        $output->writeln(sizeof($payload->getDocs()). " Downloaded. Next: ". $next);
 
     }
 }

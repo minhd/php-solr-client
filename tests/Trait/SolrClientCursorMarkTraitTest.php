@@ -27,6 +27,15 @@ class SolrClientCursorMarkTraitTest extends \PHPUnit_Framework_TestCase
         $this->assertNotNull($nextPayload->getNextCursorMark());
     }
 
+    /** @test **/
+    public function it_should_not_get_next_cursor()
+    {
+        $solr = new SolrClient('localhost', 8983, 'gettingstarted');
+        $payload = $solr->cursor();
+        $this->assertNotNull($payload->getCursorMark());
+        $this->assertNotNull($payload->getNextCursorMark());
+    }
+
     public function tearDown()
     {
         $solr = new SolrClient('localhost', 8983, 'gettingstarted');
