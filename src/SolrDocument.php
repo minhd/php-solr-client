@@ -17,7 +17,7 @@ class SolrDocument
             unset($props['_version_']);
         }
 
-        array_walk_recursive($props, function($item){
+        array_walk_recursive($props, function ($item) {
             $item = strval($item);
         });
 

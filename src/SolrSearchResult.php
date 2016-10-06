@@ -60,7 +60,6 @@ class SolrSearchResult
             $this->nextCursorMark = $payload['nextCursorMark'];
             $this->cursorMark = $payload['responseHeader']['params']['cursorMark'];
         }
-
     }
 
     /**
@@ -100,6 +99,7 @@ class SolrSearchResult
 
     /**
      * @param string $format
+     *
      * @return mixed
      */
     public function getDocs($format = 'array')
@@ -109,6 +109,7 @@ class SolrSearchResult
             foreach ($this->docs as $doc) {
                 $filler[] = $doc->toArray();
             }
+
             return json_encode($filler, true);
         }
 
@@ -159,7 +160,6 @@ class SolrSearchResult
 
     /**
      * @param string $format
-     * @return null
      */
     public function getRaw($format = 'array')
     {

@@ -3,22 +3,20 @@
 
 namespace MinhD\SolrClient;
 
-
 trait SolrClientCursorMarkTrait
 {
-
     /**
      * @param string $start
-     * @param int $rows
-     * @param array $options
+     * @param int    $rows
+     * @param array  $options
+     *
      * @return SolrSearchResult
      */
     public function cursor(
-        $start = "*",
+        $start = '*',
         $rows = 100,
         $options = ['sort' => 'id desc', 'fl' => '*', 'q' => '*']
     ) {
-
         $params = array_merge(
             [
                 'cursorMark' => $start,
@@ -27,6 +25,7 @@ trait SolrClientCursorMarkTrait
             $options
         );
         $result = $this->search($params);
+
         return $result;
     }
 }

@@ -21,38 +21,43 @@ class SolrExportCommand extends Command
             ->setDescription('Export a SOLR collection')
             ->setHelp('This command allows you to export a SOLR collection...')
             ->setDefinition(
-                new InputDefinition(array(
+                new InputDefinition([
                     new InputOption(
-                        'solr', 's',
+                        'solr',
+                        's',
                         InputOption::VALUE_REQUIRED,
                         'SOLR instance',
                         'http://localhost'
                     ),
                     new InputOption(
-                        'solr-port', 'p',
+                        'solr-port',
+                        'p',
                         InputOption::VALUE_REQUIRED,
                         'SOLR port',
                         '8983'
                     ),
                     new InputOption(
-                        'solr-collection', 'c',
+                        'solr-collection',
+                        'c',
                         InputOption::VALUE_REQUIRED,
                         'SOLR collection',
                         'gettingstarted'
                     ),
                     new InputOption(
-                        'chunk-size', null,
+                        'chunk-size',
+                        null,
                         InputOption::VALUE_REQUIRED,
                         'Chunk Size',
                         100
                     ),
                     new InputOption(
-                        'target-dir', 't',
+                        'target-dir',
+                        't',
                         InputOption::VALUE_REQUIRED,
                         'Target directory to export to',
                         '/tmp/'
                     )
-                ))
+                ])
             );
     }
 
@@ -76,14 +81,14 @@ class SolrExportCommand extends Command
         ]);
         $numFound = $payload->getNumFound();
 
-        $output->writeln("There are " . $numFound . " records to export.");
+        $output->writeln('There are ' . $numFound . ' records to export.');
 
         ini_set('memory_limit', '256M');
         $fs = new Filesystem();
         $stopwatch = new Stopwatch();
 
         $continue = true;
-        $start = "*";
+        $start = '*';
         $i = 1;
 
         $progressBar = new ProgressBar($output, $numFound);
@@ -109,7 +114,7 @@ class SolrExportCommand extends Command
             'Finished. Took (' . round($event->getDuration() / 1000, 2) . ')s'
         );
         $output->writeln(
-            "Max Memory Usage: " . round($event->getMemory() / 1000, 2) . ' KB'
+            'Max Memory Usage: ' . round($event->getMemory() / 1000, 2) . ' KB'
         );
     }
 }

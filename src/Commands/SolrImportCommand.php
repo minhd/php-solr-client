@@ -3,7 +3,6 @@
 
 namespace MinhD\SolrClient\Commands;
 
-
 use MinhD\SolrClient\SolrClient;
 use MinhD\SolrClient\SolrDocument;
 use Symfony\Component\Console\Command\Command;
@@ -24,38 +23,43 @@ class SolrImportCommand extends Command
             ->setDescription('Import a directory to SOLR')
             ->setHelp('This command allows you to import a directory of JSON to SOLR')
             ->setDefinition(
-                new InputDefinition(array(
+                new InputDefinition([
                     new InputOption(
-                        'solr', 's',
+                        'solr',
+                        's',
                         InputOption::VALUE_REQUIRED,
                         'SOLR instance',
                         'http://localhost'
                     ),
                     new InputOption(
-                        'solr-port', 'p',
+                        'solr-port',
+                        'p',
                         InputOption::VALUE_REQUIRED,
                         'SOLR port',
                         '8983'
                     ),
                     new InputOption(
-                        'solr-collection', 'c',
+                        'solr-collection',
+                        'c',
                         InputOption::VALUE_REQUIRED,
                         'SOLR collection',
                         'gettingstarted'
                     ),
                     new InputOption(
-                        'chunk-size', null,
+                        'chunk-size',
+                        null,
                         InputOption::VALUE_REQUIRED,
                         'Chunk Size',
                         100
                     ),
                     new InputOption(
-                        'source-dir', 't',
+                        'source-dir',
+                        't',
                         InputOption::VALUE_REQUIRED,
                         'Source directory to import from',
                         '/tmp/'
                     )
-                ))
+                ])
             );
     }
 
@@ -68,7 +72,6 @@ class SolrImportCommand extends Command
         $port = $input->getOption('solr-port');
         $collection = $input->getOption('solr-collection');
         $sourceDir = $input->getOption('source-dir');
-        $rows = $input->getOption('chunk-size');
 
         $solr = new SolrClient($source, $port, $collection);
 
@@ -77,7 +80,7 @@ class SolrImportCommand extends Command
         // find out how big this is
         $finder = new Finder();
         $finder->files()->in($sourceDir);
-        $output->writeln("There are " . count($finder) . " files to export.");
+        $output->writeln('There are ' . count($finder) . ' files to export.');
         $progressBar = new ProgressBar($output, count($finder));
         $stopwatch = new Stopwatch();
         $stopwatch->start('import');
@@ -99,8 +102,7 @@ class SolrImportCommand extends Command
             'Finished. Took (' . round($event->getDuration() / 1000, 2) . ')s'
         );
         $output->writeln(
-            "Max Memory Usage: " . round($event->getMemory() / 1000, 2) . ' KB'
+            'Max Memory Usage: ' . round($event->getMemory() / 1000, 2) . ' KB'
         );
-
     }
 }

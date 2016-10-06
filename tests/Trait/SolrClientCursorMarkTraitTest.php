@@ -3,7 +3,6 @@
 
 namespace MinhD\SolrClient;
 
-
 class SolrClientCursorMarkTraitTest extends \PHPUnit_Framework_TestCase
 {
     /** @test **/
@@ -39,7 +38,7 @@ class SolrClientCursorMarkTraitTest extends \PHPUnit_Framework_TestCase
     public function tearDown()
     {
         $solr = new SolrClient('localhost', 8983, 'gettingstarted');
-        $solr->removeByQuery("*:*");
+        $solr->removeByQuery('*:*');
         $solr->commit();
     }
 }
