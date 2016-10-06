@@ -13,6 +13,14 @@ class SolrDocument
      */
     public function __construct(array $props = [])
     {
+        if (array_key_exists('_version_', $props)) {
+            unset($props['_version_']);
+        }
+
+        array_walk_recursive($props, function($item){
+            $item = strval($item);
+        });
+
         $this->props = $props;
     }
 

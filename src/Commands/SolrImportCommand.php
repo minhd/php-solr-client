@@ -1,25 +1,28 @@
 <?php
 
+
 namespace MinhD\SolrClient\Commands;
 
+
 use MinhD\SolrClient\SolrClient;
+use MinhD\SolrClient\SolrDocument;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\Stopwatch\Stopwatch;
 
-class SolrExportCommand extends Command
+class SolrImportCommand extends Command
 {
     protected function configure()
     {
         $this
-            ->setName('solr:export')
-            ->setDescription('Export a SOLR collection')
-            ->setHelp('This command allows you to export a SOLR collection...')
+            ->setName('solr:import')
+            ->setDescription('Import a directory to SOLR')
+            ->setHelp('This command allows you to import a directory of JSON to SOLR')
             ->setDefinition(
                 new InputDefinition(array(
                     new InputOption(
@@ -47,9 +50,9 @@ class SolrExportCommand extends Command
                         100
                     ),
                     new InputOption(
-                        'target-dir', 't',
+                        'source-dir', 't',
                         InputOption::VALUE_REQUIRED,
-                        'Target directory to export to',
+                        'Source directory to import from',
                         '/tmp/'
                     )
                 ))
@@ -64,46 +67,33 @@ class SolrExportCommand extends Command
 
         $port = $input->getOption('solr-port');
         $collection = $input->getOption('solr-collection');
-        $targetDir = $input->getOption('target-dir');
+        $sourceDir = $input->getOption('source-dir');
         $rows = $input->getOption('chunk-size');
 
         $solr = new SolrClient($source, $port, $collection);
 
-        // find out how big this is
-        $payload = $solr->search([
-            'q' => '*',
-            'rows' => '0'
-        ]);
-        $numFound = $payload->getNumFound();
-
-        $output->writeln("There are " . $numFound . " records to export.");
-
         ini_set('memory_limit', '256M');
-        $fs = new Filesystem();
+
+        // find out how big this is
+        $finder = new Finder();
+        $finder->files()->in($sourceDir);
+        $output->writeln("There are " . count($finder) . " files to export.");
+        $progressBar = new ProgressBar($output, count($finder));
         $stopwatch = new Stopwatch();
-
-        $continue = true;
-        $start = "*";
-        $i = 1;
-
-        $progressBar = new ProgressBar($output, $numFound);
-        $stopwatch->start('download');
-        while ($continue) {
-            $payload = $solr->cursor($start, $rows);
-            $documents = $payload->getDocs('json');
-            $fs->dumpFile($targetDir . '/' . $i . '.json', $documents);
-
-            if (sizeof($payload->getDocs()) == 0) {
-                $continue = false;
+        $stopwatch->start('import');
+        foreach ($finder as $file) {
+            // $output->writeln("Processing ".$file->getRealPath());
+            $contents = json_decode($file->getContents(), true);
+            foreach ($contents as $doc) {
+                $document = new SolrDocument($doc);
+                $solr->add($document);
             }
-
-            $i++;
-            $start = $payload->getNextCursorMark();
-            $progressBar->advance(sizeof($payload->getDocs()));
+            $progressBar->advance(1);
+            $solr->commit();
         }
+        $solr->optimize();
         $progressBar->finish();
-        $event = $stopwatch->stop('download');
-
+        $event = $stopwatch->end('import');
         $output->writeln('');
         $output->writeln(
             'Finished. Took (' . round($event->getDuration() / 1000, 2) . ')s'
@@ -111,5 +101,6 @@ class SolrExportCommand extends Command
         $output->writeln(
             "Max Memory Usage: " . round($event->getMemory() / 1000, 2) . ' KB'
         );
+
     }
 }

@@ -18,7 +18,8 @@
         "guzzlehttp/guzzle": "^6.2",
         "symfony/console": "^3.1",
         "symfony/filesystem": "^3.1",
-        "symfony/stopwatch": "^3.1"
+        "symfony/stopwatch": "^3.1",
+        "symfony/finder": "^3.1"
     },
     "require-dev": {
         "phpunit/phpunit": "~4.8 || ~5.0",
@@ -56,8 +57,7 @@
             "@test"
         ],
         "solr-get": [
-            "curl -sSL https://raw.githubusercontent.com/moliware/travis-solr/master/travis-solr.sh | SOLR_VERSION=5.4.0 bash",
-            "rm -f solr-*.tgz"
+            "curl -sSL https://raw.githubusercontent.com/moliware/travis-solr/master/travis-solr.sh | SOLR_VERSION=5.4.0 bash"
         ],
         "solr-stop": [
             "solr-5.4.0/bin/solr stop"
