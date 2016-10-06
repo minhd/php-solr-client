@@ -38,7 +38,6 @@ trait SolrClientSearchTrait
         return $this->result;
     }
 
-
     /**
      * @return array
      */
@@ -49,7 +48,6 @@ trait SolrClientSearchTrait
 
     /**
      * @param string $name
-     * @return null
      */
     public function getSearchParam($name)
     {

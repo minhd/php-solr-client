@@ -40,6 +40,6 @@ class SolrSearchResultTest extends \PHPUnit_Framework_TestCase
         $result = new SolrSearchResult($payload, new SolrClient);
         $this->assertEquals($result->getParams(), $payload['responseHeader']['params']);
         $this->assertEquals($result->getFacets(), $payload['facet_counts']);
-        $this->assertEquals($result->getFacetField('title'), ['test'=>1]);
+        $this->assertEquals($result->getFacetField('title'), ['test' => 1]);
     }
 }

@@ -55,6 +55,7 @@ class SolrClient
             ]);
         } catch (RequestException $e) {
             $this->logError('Failed to connect with request: '.Psr7\str($e->getRequest()));
+
             return false;
         }
     }

@@ -13,3 +13,8 @@ $application = new Application();
 
 $application->add(new SolrExportCommand());
 $application->run();
+
+// TODO: Remove soon
+function dd($t) {
+    die(print_r($t));
+}
