@@ -79,21 +79,29 @@ class SolrImportCommand extends Command
 
         // find out how big this is
         $finder = new Finder();
-        $finder->files()->in($sourceDir);
-        $output->writeln('There are ' . count($finder) . ' files to export.');
+        $finder->files()->in($sourceDir)->name('*.json');
+
+        $output->writeln('There are ' . count($finder) . ' files to import.');
         $progressBar = new ProgressBar($output, count($finder));
         $stopwatch = new Stopwatch();
         $stopwatch->start('import');
+
         foreach ($finder as $file) {
             // $output->writeln("Processing ".$file->getRealPath());
             $contents = json_decode($file->getContents(), true);
+
+            if (!$contents) {
+                $output->writeln('Fail to read content of '.$file->getRealPath());
+                continue;
+            }
+
             foreach ($contents as $doc) {
                 $document = new SolrDocument($doc);
                 $solr->add($document);
             }
             $progressBar->advance(1);
-            $solr->commit();
         }
+        $solr->commit();
         $solr->optimize();
         $progressBar->finish();
         $event = $stopwatch->end('import');

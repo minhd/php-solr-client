@@ -95,7 +95,7 @@ class SolrClientCRUDTraitTest extends \PHPUnit_Framework_TestCase
         $solr->removeByQuery('title:test');
         $solr->commit();
 
-        $result = $solr->query('*:*');
+        $result = $solr->query('title:test');
         $this->assertEquals(0, $result->getNumFound());
     }
 

@@ -25,5 +25,8 @@ class SolrDocumentTest extends PHPUnit_Framework_TestCase
         $expected = '{"id":12345,"title":"fish"}';
         $actual = $doc->toJSON();
         $this->assertEquals($expected, $actual);
+
+        $doc = new SolrDocument(['id' => 12345]);
+        $this->assertEquals($doc->id, 12345);
     }
 }
