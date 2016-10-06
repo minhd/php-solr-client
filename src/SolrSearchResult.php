@@ -36,7 +36,7 @@ class SolrSearchResult
      */
     public function init($payload)
     {
-        $this->raw = $payload;
+        // $this->raw = $payload;
         $this->params = $payload['responseHeader']['params'];
         $this->numFound = $payload['response']['numFound'];
 

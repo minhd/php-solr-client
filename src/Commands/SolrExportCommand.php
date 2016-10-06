@@ -8,6 +8,7 @@ use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Filesystem\Filesystem;
 
 class SolrExportCommand extends Command
 {
@@ -38,6 +39,12 @@ class SolrExportCommand extends Command
                         'gettingstarted'
                     ),
                     new InputOption(
+                        'chunk-size', null,
+                        InputOption::VALUE_REQUIRED,
+                        'Chunk Size',
+                        100
+                    ),
+                    new InputOption(
                         'target-dir', 't',
                         InputOption::VALUE_REQUIRED,
                         'Target directory to export to',
@@ -56,6 +63,7 @@ class SolrExportCommand extends Command
         $port = $input->getOption('source-solr-port');
         $collection = $input->getOption('source-solr-collection');
         $targetDir = $input->getOption('target-dir');
+        $rows = $input->getOption('chunk-size');
 
         $solr = new SolrClient($source, $port, $collection);
 
@@ -67,10 +75,30 @@ class SolrExportCommand extends Command
 
         $output->writeln("There are ".$numFound. " records to export.");
 
-        $payload = $solr->cursor();
-        $documents = $payload->getDocs('json');
-        $next = $payload->getNextCursorMark();
-        $output->writeln(sizeof($payload->getDocs()). " Downloaded. Next: ". $next);
+        ini_set('memory_limit','256M');
+        $fs = new Filesystem();
+
+        $continue = true;
+        $start = "*";
+        $i = 1;
+        $progress = 0;
+
+        while ($continue) {
+            $payload = $solr->cursor($start, $rows);
+            $documents = $payload->getDocs('json');
+            $fs->dumpFile($targetDir.'/'.$i.'.json', $documents);
+
+            $progress += sizeof($payload->getDocs());
+            $percentage = ($progress * 100 ) / $numFound;
+            if (sizeof($payload->getDocs()) == 0) {
+                $continue = false;
+            }
+            $i++;
+            $start = $payload->getNextCursorMark();
+
+            $output->writeln(sizeof($payload->getDocs()). " Downloaded. Next: ". $start. ". Progress: ".$progress. '  ('.round($percentage,2).'%). Memory: '.memory_get_usage());
+        }
+        $output->writeln('Finished');
 
     }
 }
