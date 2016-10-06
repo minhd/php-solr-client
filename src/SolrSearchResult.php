@@ -14,6 +14,9 @@ class SolrSearchResult
     private $params;
     private $client;
 
+    private $cursorMark = null;
+    private $nextCursorMark = null;
+
     /**
      * SolrSearchResult constructor.
      *
@@ -48,6 +51,13 @@ class SolrSearchResult
         foreach ($payload['response']['docs'] as $doc) {
             $this->docs[] = new SolrDocument($doc);
         }
+
+        // cursorMark
+        if (array_key_exists('nextCursorMark', $payload)) {
+            $this->nextCursorMark = $payload['nextCursorMark'];
+            $this->cursorMark = $payload['responseHeader']['params']['cursorMark'];
+        }
+
     }
 
     /**
@@ -117,5 +127,21 @@ class SolrSearchResult
     public function getFacets()
     {
         return $this->facets;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCursorMark()
+    {
+        return $this->cursorMark;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getNextCursorMark()
+    {
+        return $this->nextCursorMark;
     }
 }

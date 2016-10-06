@@ -21,6 +21,7 @@ class SolrClient
 
     use SolrClientCRUDTrait;
     use SolrClientSearchTrait;
+    use SolrClientCursorMarkTrait;
 
     /**
      * SolrClient constructor.
