@@ -55,9 +55,6 @@ class SolrRunCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $source = $input->getOption('solr');
-
-        // TODO: do something nifty about source containing the port
-
         $port = $input->getOption('solr-port');
         $collection = $input->getOption('solr-collection');
 
@@ -76,10 +73,22 @@ class SolrRunCommand extends Command
                 print_r($solr->removeByQuery('*:*'));
                 print_r($solr->commit());
                 break;
+            case 'create':
+                print_r($solr->collections()->create(
+                    $collection,
+                    [
+                        'numShards'=>1,
+                        'collection.configName' => 'gettingstarted'
+                    ]
+                ));
+                break;
+            case 'delete':
+                print_r($solr->collections()->delete($collection));
+                break;
             default:
                 break;
         }
 
-        $output->println('Done');
+        $output->writeln('Done');
     }
 }
