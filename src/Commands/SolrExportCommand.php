@@ -74,7 +74,7 @@ class SolrExportCommand extends Command
     {
         $this->options = $input->getOptions();
 
-        if ($this->options('schema-only') !== false) {
+        if ($this->options['schema-only'] !== false) {
             $this->exportSchema($output);
 
             return true;
@@ -128,8 +128,11 @@ class SolrExportCommand extends Command
         $stopwatch->start('download');
         while ($continue) {
             $payload = $solr->cursor($start, $this->options['chunk-size'], $searchParams);
-            $documents = $payload->getDocs('json');
-            $fs->dumpFile($this->options['target-dir'] . '/' . $i . '.json', $documents);
+            $documents = $payload->getDocs();
+
+            if (count($documents) > 0) {
+                $fs->dumpFile($this->options['target-dir'] . '/' . $i . '.json', json_encode($documents, true));
+            }
 
             if ($start == $payload->getNextCursorMark()) {
                 $continue = false;

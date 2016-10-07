@@ -71,7 +71,7 @@ class SolrImportCommand extends Command
                         'schema-location', null,
                         InputOption::VALUE_OPTIONAL,
                         'Schema location for --schema-only=true',
-                        'export/schema.json'
+                        'export/schema/schema.json'
                     )
                 ])
             );
@@ -104,14 +104,34 @@ class SolrImportCommand extends Command
         $content = json_decode(file_get_contents($fileLocation), true);
 
         // add field type
+        $result = $solr->schema()->setFieldTypes($content['schema']['fieldTypes']);
+        if ($result['responseHeader']['status'] == 0) {
+            $output->writeln("FieldTypes added");
+        }
 
         // add fields
+        $result = $solr->schema()->setFields($content['schema']['fields']);
+        if ($result['responseHeader']['status'] == 0) {
+            $output->writeln("Fields added");
+        }
 
         // add copyFields
+        $result = $solr->schema()->setCopyFields($content['schema']['copyFields']);
+        if ($result['responseHeader']['status'] == 0) {
+            $output->writeln("CopyFields added");
+        }
 
         // add dynamicFields
+        $result = $solr->schema()->setDynamicFields($content['schema']['dynamicFields']);
+        if ($result['responseHeader']['status'] == 0) {
+            $output->writeln("Dynamic Fields added");
+        }
 
-        $result = $solr->schema()->setFields($content['schema']['fields']);
+        $result = $solr->collections()->reload($this->options['solr-collection']);
+        if ($result['responseHeader']['status'] == 0) {
+            $output->writeln("Collection ".$this->options['solr-collection']." reloaded");
+        }
+
         $output->writeln('Imported schema '.$fileLocation.' to '.$solr->getBaseUrl().$solr->getCore());
     }
 
@@ -131,6 +151,7 @@ class SolrImportCommand extends Command
         $stopwatch->start('import');
 
         foreach ($finder as $file) {
+
             // $output->writeln("Processing ".$file->getRealPath());
             $contents = json_decode($file->getContents(), true);
 
