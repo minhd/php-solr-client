@@ -77,13 +77,16 @@ class SolrRunCommand extends Command
                 print_r($solr->collections()->create(
                     $collection,
                     [
-                        'numShards'=>1,
+                        'numShards' => 1,
                         'collection.configName' => 'gettingstarted'
                     ]
                 ));
                 break;
             case 'delete':
                 print_r($solr->collections()->delete($collection));
+                break;
+            case 'list':
+                print_r($solr->collections()->get());
                 break;
             default:
                 break;

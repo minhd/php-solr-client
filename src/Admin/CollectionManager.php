@@ -39,4 +39,18 @@ class CollectionManager extends SolrManager
             'name' => $collection
         ]);
     }
+
+    public function listCollections()
+    {
+        return $this->solr()->request('GET', 'admin/collections', [
+            'action' => 'LIST'
+        ]);
+    }
+
+    public function get()
+    {
+        $collections = $this->listCollections();
+
+        return $collections['collections'];
+    }
 }
