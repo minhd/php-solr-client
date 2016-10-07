@@ -74,9 +74,8 @@ class SolrExportCommand extends Command
     {
         $this->options = $input->getOptions();
 
-        if ($input->getOption('schema-only')) {
+        if ($input->getOption('schema-only') !== false) {
             $this->exportSchema($output);
-
             return true;
         }
 
@@ -85,14 +84,15 @@ class SolrExportCommand extends Command
 
     private function exportSchema(OutputInterface $output)
     {
-        //        $solr = new SolrClient(
-//            $this->options['solr'],
-//            $this->options['solr-port'],
-//            $this->options['solr-collection']
-//        );
-//
-//        $fs = new Filesystem();
-
+        $solr = new SolrClient(
+            $this->options['solr'],
+            $this->options['solr-port'],
+            $this->options['solr-collection']
+        );
+        $fs = new Filesystem();
+        $schema = $solr->schema()->get();
+        $fileName =  $this->options['target-dir'].'schema.json';
+        $fs->dumpFile($fileName, json_encode($schema, true));
         $output->writeln('Schema written to '.$this->options['target-dir'].'schema.json');
     }
 
