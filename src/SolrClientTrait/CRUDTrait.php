@@ -45,14 +45,13 @@ trait CRUDTrait
      */
     public function get($id)
     {
-        $result = $this->request('GET', $this->getCore() . '/select', [
-            'q' => 'id:' . $id
+        $result = $this->request('GET', $this->getCore() . '/get', [
+            'id' => $id,
+            'fl' => '*'
         ]);
 
-        if (array_key_exists(0, $result['response']['docs'])) {
-            $doc = $result['response']['docs'][0];
-
-            return new SolrDocument($doc);
+        if (array_key_exists('doc', $result) && $result['doc'] !== null) {
+            return new SolrDocument($result['doc']);
         }
 
         return null;
