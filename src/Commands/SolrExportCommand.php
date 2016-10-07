@@ -74,7 +74,7 @@ class SolrExportCommand extends Command
     {
         $this->options = $input->getOptions();
 
-        if ($input->getOption('schema-only') !== false) {
+        if ($this->options('schema-only') !== false) {
             $this->exportSchema($output);
 
             return true;

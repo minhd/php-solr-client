@@ -16,6 +16,8 @@ use Symfony\Component\Stopwatch\Stopwatch;
 
 class SolrImportCommand extends Command
 {
+    private $options = [];
+
     protected function configure()
     {
         $this
@@ -57,7 +59,19 @@ class SolrImportCommand extends Command
                         't',
                         InputOption::VALUE_REQUIRED,
                         'Source directory to import from',
-                        '/tmp/'
+                        'export/'
+                    ),
+                    new InputOption(
+                        'schema-only', null,
+                        InputOption::VALUE_OPTIONAL,
+                        'Import Only Schema',
+                        false
+                    ),
+                    new InputOption(
+                        'schema-location', null,
+                        InputOption::VALUE_OPTIONAL,
+                        'Schema location for --schema-only=true',
+                        'export/schema.json'
                     )
                 ])
             );
@@ -65,21 +79,51 @@ class SolrImportCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $source = $input->getOption('solr');
+        $this->options = $input->getOptions();
 
-        // TODO: do something nifty about source containing the port
+        if ($this->options['schema-only'] !== false) {
+            $this->importSchema($output);
 
-        $port = $input->getOption('solr-port');
-        $collection = $input->getOption('solr-collection');
-        $sourceDir = $input->getOption('source-dir');
+            return true;
+        }
 
-        $solr = new SolrClient($source, $port, $collection);
+        $this->importRecords($output);
+    }
+
+    private function importSchema($output)
+    {
+        $solr = new SolrClient($this->options['solr'], $this->options['solr-port'], $this->options['solr-collection']);
+        $fileLocation = $this->options['schema-location'];
+
+        if (!file_exists($fileLocation)) {
+            $output->writeln('No file found at '.$fileLocation);
+
+            return false;
+        }
+
+        $content = json_decode(file_get_contents($fileLocation), true);
+
+        // add field type
+
+        // add fields
+
+        // add copyFields
+
+        // add dynamicFields
+
+        $result = $solr->schema()->setFields($content['schema']['fields']);
+        $output->writeln('Imported schema '.$fileLocation.' to '.$solr->getBaseUrl().$solr->getCore());
+    }
+
+    private function importRecords(OutputInterface $output)
+    {
+        $solr = new SolrClient($this->options['solr'], $this->options['solr-port'], $this->options['solr-collection']);
 
         ini_set('memory_limit', '256M');
 
         // find out how big this is
         $finder = new Finder();
-        $finder->files()->in($sourceDir)->name('*.json');
+        $finder->files()->in($this->options['source-dir'])->name('*.json');
 
         $output->writeln('There are ' . count($finder) . ' files to import.');
         $progressBar = new ProgressBar($output, count($finder));
