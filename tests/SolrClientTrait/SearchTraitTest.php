@@ -3,7 +3,7 @@
 
 namespace MinhD\SolrClient;
 
-class SolrClientSearchTraitTest extends \PHPUnit_Framework_TestCase
+class SearchTraitTest extends \PHPUnit_Framework_TestCase
 {
     /** @test **/
     public function it_should_search_correctly()

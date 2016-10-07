@@ -11,3 +11,4 @@ build
 composer.lock
 vendor/
 solr-*
+export/

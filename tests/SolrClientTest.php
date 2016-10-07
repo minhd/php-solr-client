@@ -50,10 +50,10 @@ class SolrClientTest extends PHPUnit_Framework_TestCase
     }
 
     /** @test **/
-    public function it_should_be_able_to_reload_a_core()
+    public function it_should_be_able_to_reload_a_collection()
     {
         $solr = new SolrClient('localhost', 8983);
-        $result = $solr->reload('gettingstarted_shard1_replica1');
+        $result = $solr->reload('gettingstarted');
         $this->assertEquals(0, $result['responseHeader']['status']);
     }
 

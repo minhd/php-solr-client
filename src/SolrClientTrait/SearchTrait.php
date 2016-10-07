@@ -1,9 +1,11 @@
 <?php
 
 
-namespace MinhD\SolrClient;
+namespace MinhD\SolrClient\SolrClientTrait;
 
-trait SolrClientSearchTrait
+use MinhD\SolrClient\SolrSearchResult;
+
+trait SearchTrait
 {
     private $searchParams = [
         'start' => 0,

@@ -14,6 +14,8 @@ use Symfony\Component\Stopwatch\Stopwatch;
 
 class SolrExportCommand extends Command
 {
+    private $options = [];
+
     protected function configure()
     {
         $this
@@ -55,7 +57,14 @@ class SolrExportCommand extends Command
                         't',
                         InputOption::VALUE_REQUIRED,
                         'Target directory to export to',
-                        '/tmp/'
+                        'export/'
+                    ),
+                    new InputOption(
+                        'schema-only',
+                        null,
+                        InputOption::VALUE_OPTIONAL,
+                        'Export the Schema Only',
+                        false
                     )
                 ])
             );
@@ -63,22 +72,45 @@ class SolrExportCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $source = $input->getOption('solr');
+        $this->options = $input->getOptions();
 
-        // TODO: do something nifty about source containing the port
+        if ($input->getOption('schema-only')) {
+            $this->exportSchema($output);
 
-        $port = $input->getOption('solr-port');
-        $collection = $input->getOption('solr-collection');
-        $targetDir = $input->getOption('target-dir');
-        $rows = $input->getOption('chunk-size');
+            return true;
+        }
 
-        $solr = new SolrClient($source, $port, $collection);
+        $this->exportRecords($output);
+    }
+
+    private function exportSchema(OutputInterface $output)
+    {
+        //        $solr = new SolrClient(
+//            $this->options['solr'],
+//            $this->options['solr-port'],
+//            $this->options['solr-collection']
+//        );
+//
+//        $fs = new Filesystem();
+
+        $output->writeln('Schema written to '.$this->options['target-dir'].'schema.json');
+    }
+
+    private function exportRecords(OutputInterface $output)
+    {
+        $solr = new SolrClient(
+            $this->options['solr'],
+            $this->options['solr-port'],
+            $this->options['solr-collection']
+        );
+
+        $searchParams = [
+            'q' => '*',
+            'rows' => $this->options['chunk-size']
+        ];
 
         // find out how big this is
-        $payload = $solr->search([
-            'q' => '*',
-            'rows' => '0'
-        ]);
+        $payload = $solr->search($searchParams);
         $numFound = $payload->getNumFound();
 
         $output->writeln('There are ' . $numFound . ' records to export.');
@@ -94,11 +126,11 @@ class SolrExportCommand extends Command
         $progressBar = new ProgressBar($output, $numFound);
         $stopwatch->start('download');
         while ($continue) {
-            $payload = $solr->cursor($start, $rows);
+            $payload = $solr->cursor($start, $this->options['chunk-size'], $searchParams);
             $documents = $payload->getDocs('json');
-            $fs->dumpFile($targetDir . '/' . $i . '.json', $documents);
+            $fs->dumpFile($this->options['target-dir'] . '/' . $i . '.json', $documents);
 
-            if (sizeof($payload->getDocs()) == 0) {
+            if ($start == $payload->getNextCursorMark()) {
                 $continue = false;
             }
 

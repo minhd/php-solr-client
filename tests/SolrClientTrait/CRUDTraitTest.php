@@ -3,7 +3,7 @@
 
 namespace MinhD\SolrClient;
 
-class SolrClientCRUDTraitTest extends \PHPUnit_Framework_TestCase
+class CRUDTraitTest extends \PHPUnit_Framework_TestCase
 {
     /** @test **/
     public function round_trip()

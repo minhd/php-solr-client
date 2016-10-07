@@ -3,7 +3,7 @@
 
 namespace MinhD\SolrClient;
 
-class SolrClientCursorMarkTraitTest extends \PHPUnit_Framework_TestCase
+class CursorMarkTraitTest extends \PHPUnit_Framework_TestCase
 {
     /** @test **/
     public function it_should_get_next_cursor()

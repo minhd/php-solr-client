@@ -1,9 +1,9 @@
 <?php
 
 
-namespace MinhD\SolrClient;
+namespace MinhD\SolrClient\SolrClientTrait;
 
-trait SolrClientCursorMarkTrait
+trait CursorMarkTrait
 {
     /**
      * @param string $start
@@ -15,15 +15,24 @@ trait SolrClientCursorMarkTrait
     public function cursor(
         $start = '*',
         $rows = 100,
-        $options = ['sort' => 'id desc', 'fl' => '*', 'q' => '*']
+        $options = []
     ) {
+        $defaultOptions = [
+            'sort' => 'id desc',
+            'fl' => '*',
+            'q' => '*',
+            'rows' => 100
+        ];
+
         $params = array_merge(
+            $defaultOptions,
+            $options,
             [
                 'cursorMark' => $start,
                 'rows' => $rows
-            ],
-            $options
+            ]
         );
+
         $result = $this->search($params);
 
         return $result;

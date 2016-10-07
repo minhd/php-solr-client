@@ -5,6 +5,11 @@ namespace MinhD\SolrClient;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7;
+use MinhD\SolrClient\SolrClientTrait\CRUDTrait;
+use MinhD\SolrClient\SolrClientTrait\CursorMarkTrait;
+use MinhD\SolrClient\SolrClientTrait\ManageCollectionTrait;
+use MinhD\SolrClient\SolrClientTrait\ManageSchemaTrait;
+use MinhD\SolrClient\SolrClientTrait\SearchTrait;
 use Symfony\Component\Config\Definition\Exception\Exception;
 
 class SolrClient
@@ -19,9 +24,12 @@ class SolrClient
 
     private $errorMessages = [];
 
-    use SolrClientCRUDTrait;
-    use SolrClientSearchTrait;
-    use SolrClientCursorMarkTrait;
+    use CRUDTrait;
+    use SearchTrait;
+    use CursorMarkTrait;
+
+    use ManageSchemaTrait;
+    use ManageCollectionTrait;
 
     /**
      * SolrClient constructor.
@@ -62,19 +70,6 @@ class SolrClient
     }
 
     /**
-     * @param string $core
-     *
-     * @return mixed
-     */
-    public function reload($core)
-    {
-        return $this->request('GET', 'admin/cores', [
-            'action' => 'RELOAD',
-            'core' => $core
-        ]);
-    }
-
-    /**
      * @return mixed
      */
     public function commit()
@@ -108,7 +103,7 @@ class SolrClient
      *
      * @return mixed
      */
-    private function request($method, $path, $query, $body = [])
+    public function request($method, $path, $query, $body = [])
     {
         // reset errors
         $this->errorMessages = [];
@@ -123,11 +118,24 @@ class SolrClient
             $request['json'] = $body;
         }
 
-        $res = $this->client->request($method, $path, $request);
+        try {
+            $res = $this->client->request($method, $path, $request);
 
-        $result = json_decode($res->getBody()->getContents(), true);
+            return json_decode($res->getBody()->getContents(), true);
+        } catch (RequestException $e) {
+            if ($e->getResponse() === null) {
+                $this->errorMessages[] = $e->getMessage();
 
-        return $result;
+                return false;
+            }
+
+            // 4xx
+            if ($e->getResponse()->getStatusCode() == '400') {
+                $content = $e->getResponse()->getBody()->getContents();
+
+                return json_decode($content, true);
+            }
+        }
     }
 
     /**

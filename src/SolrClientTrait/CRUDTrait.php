@@ -1,6 +1,8 @@
 <?php
 
-namespace MinhD\SolrClient;
+namespace MinhD\SolrClient\SolrClientTrait;
+
+use MinhD\SolrClient\SolrDocument;
 
 /**
  * Class SolrClientCRUDTrait
@@ -9,7 +11,7 @@ namespace MinhD\SolrClient;
  * update = update
  * delete = remove
  */
-trait SolrClientCRUDTrait
+trait CRUDTrait
 {
     /**
      * @param SolrDocument $document
