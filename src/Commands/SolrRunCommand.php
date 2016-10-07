@@ -8,6 +8,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class SolrRunCommand extends Command
@@ -42,10 +43,10 @@ class SolrRunCommand extends Command
                         'gettingstarted'
                     ),
                     new InputOption(
-                        'command',
-                        null,
+                        'do',
+                        'd',
                         InputOption::VALUE_REQUIRED,
-                        'Command to run',
+                        'Do something',
                         'commit'
                     )
                 ])
@@ -60,38 +61,60 @@ class SolrRunCommand extends Command
 
         $solr = new SolrClient($source, $port, $collection);
 
-        $command = $input->getOption('command');
+        $command = $input->getOption('do');
 
         switch ($command) {
             case 'commit':
-                print_r($solr->commit());
+                $solr->commit();
+                $this->handleResponse($solr, $output);
                 break;
             case 'optimize':
-                print_r($solr->optimize());
+                $solr->optimize();
+                $this->handleResponse($solr, $output);
+                break;
+            case 'reload':
+                $solr->collections()->reload();
+                $this->handleResponse($solr, $output);
                 break;
             case 'clear':
-                print_r($solr->removeByQuery('*:*'));
-                print_r($solr->commit());
+                $solr->removeByQuery('*:*');
+                $solr->commit();
+                $this->handleResponse($solr, $output);
                 break;
             case 'create':
-                print_r($solr->collections()->create(
+                $solr->collections()->create(
                     $collection,
                     [
                         'numShards' => 1,
                         'collection.configName' => 'gettingstarted'
                     ]
-                ));
+                );
+                $this->handleResponse($solr, $output);
                 break;
             case 'delete':
-                print_r($solr->collections()->delete($collection));
+                $solr->collections()->delete($collection);
+                $this->handleResponse($solr, $output);
                 break;
             case 'list':
-                print_r($solr->collections()->get());
+                $result = $solr->collections()->get();
+                foreach ($result as $r) {
+                    $output->writeln($r);
+                }
                 break;
             default:
+                $output->writeln("Unknown -d flag: ". $command);
                 break;
         }
+    }
 
-        $output->writeln('Done');
+    private function handleResponse($solr, OutputInterface $output)
+    {
+        if ($solr->hasError()) {
+            foreach ($solr->getErrors() as $error) {
+                $output->writeln("<error>$error</error>");
+            }
+        } else {
+            $output->writeln("Finished!");
+        }
     }
 }

@@ -124,17 +124,24 @@ class SolrClient
             return json_decode($res->getBody()->getContents(), true);
         } catch (RequestException $e) {
             if ($e->getResponse() === null) {
-                $this->errorMessages[] = $e->getMessage();
-
+                $this->logError($e->getMessage());
                 return false;
             }
 
             // 4xx
-            if ($e->getResponse()->getStatusCode() == '400') {
+            if ($e->getResponse()->getStatusCode() == 400) {
                 $content = $e->getResponse()->getBody()->getContents();
-
+                $this->logError($content);
                 return json_decode($content, true);
             }
+
+            if ($e->getResponse()->getStatusCode() === 404) {
+                $this->logError('404. Path: '.$e->getRequest()->getUri()->getPath(). " doesn't exist");
+                return false;
+            }
+
+            $this->logError($e->getMessage());
+            return false;
         }
     }
 

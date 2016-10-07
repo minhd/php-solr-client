@@ -19,6 +19,9 @@ $application->add(new SolrRunCommand());
 $application->run();
 
 // TODO: Remove soon
-function dd($t) {
-    die(print_r($t));
+function dd()
+{
+    $args = func_get_args();
+    call_user_func_array('var_dump', $args);
+    die();
 }
