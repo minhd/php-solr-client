@@ -53,7 +53,7 @@ class CRUDTraitTest extends \PHPUnit_Framework_TestCase
         $solr->setAutoCommit(true);
 
         // add a document, auto commit
-        $solr->add(new SolrDocument(['id' => 1, 'title' => 'test']));
+        $title = $solr->add(new SolrDocument(['id' => 1, 'title' => 'test']));
 
         // get the document right away, make sure it's there
         $doc = $solr->get(1);

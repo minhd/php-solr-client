@@ -76,7 +76,6 @@ class SchemaManager extends SolrManager
         if (array_key_exists('add-copy-field', $request)) {
             return $this->request($request);
         }
-
     }
 
     public function deleteFields($fields)
@@ -178,8 +177,8 @@ class SchemaManager extends SolrManager
     /**
      * Get a single field by name
      *
-     * @param $name
-     * @param null $existingSchema
+     * @param string $name
+     * @param null   $existingSchema
      *
      * @return mixed
      */

@@ -80,6 +80,7 @@ class SchemaManagerTest extends \PHPUnit_Framework_TestCase
 
         // remove it
         $result = $solr->schema()->deleteFieldTypes(['alphaOnlySort']);
+        $this->assertArrayNotHasKey('errors', $result);
         $solr->collections()->reload('gettingstarted');
         $this->assertEquals($result['responseHeader']['status'], 0);
         $this->assertFalse($solr->schema()->hasFieldType('alphaOnlySort'));
@@ -141,6 +142,5 @@ class SchemaManagerTest extends \PHPUnit_Framework_TestCase
         // remove the fields
         $solr->schema()->deleteFields(['field1', 'field2']);
         $solr->collections()->reload('gettingstarted');
-
     }
 }
