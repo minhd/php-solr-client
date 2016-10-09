@@ -102,7 +102,7 @@ class SolrRunCommand extends Command
                 }
                 break;
             default:
-                $output->writeln("Unknown -d flag: ". $command);
+                $output->writeln('Unknown -d flag: '. $command);
                 break;
         }
     }
@@ -113,8 +113,7 @@ class SolrRunCommand extends Command
             foreach ($solr->getErrors() as $error) {
                 $output->writeln("<error>$error</error>");
             }
-        } else {
-            $output->writeln("Finished!");
         }
+        $output->writeln($solr->hasError() ? 'Finish With Error' : 'Finished!');
     }
 }

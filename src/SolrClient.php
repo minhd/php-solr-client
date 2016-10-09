@@ -125,6 +125,7 @@ class SolrClient
         } catch (RequestException $e) {
             if ($e->getResponse() === null) {
                 $this->logError($e->getMessage());
+
                 return false;
             }
 
@@ -132,15 +133,18 @@ class SolrClient
             if ($e->getResponse()->getStatusCode() == 400) {
                 $content = $e->getResponse()->getBody()->getContents();
                 $this->logError($content);
+
                 return json_decode($content, true);
             }
 
             if ($e->getResponse()->getStatusCode() === 404) {
                 $this->logError('404. Path: '.$e->getRequest()->getUri()->getPath(). " doesn't exist");
+
                 return false;
             }
 
             $this->logError($e->getMessage());
+
             return false;
         }
     }

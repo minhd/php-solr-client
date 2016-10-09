@@ -49,6 +49,7 @@ trait CRUDTrait
 
         if ($result->getNumFound() > 0) {
             $docs = $result->getDocs();
+
             return $docs[0];
         }
 

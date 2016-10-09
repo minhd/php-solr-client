@@ -8,7 +8,6 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class SolrRunCommandTest extends \PHPUnit_Framework_TestCase
 {
-
     /** @test **/
     public function it_should_commit_optimize_correctly()
     {
@@ -120,5 +119,4 @@ class SolrRunCommandTest extends \PHPUnit_Framework_TestCase
         ]);
         $this->assertRegExp('/Finished/', $commandTester->getDisplay());
     }
-
 }
