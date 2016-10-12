@@ -41,7 +41,7 @@ class SolrClient
     public function __construct(
         $host = 'http://localhost',
         $port = 8983,
-        $core = 'collection1'
+        $core = 'gettingstarted'
     ) {
         $this->host = $this->cleanHost($host);
         $this->port = $port;

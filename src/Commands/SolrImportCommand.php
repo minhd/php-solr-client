@@ -170,7 +170,7 @@ class SolrImportCommand extends Command
         $solr->commit();
         $solr->optimize();
         $progressBar->finish();
-        $event = $stopwatch->end('import');
+        $event = $stopwatch->stop('import');
         $output->writeln('');
         $output->writeln(
             'Finished. Took (' . round($event->getDuration() / 1000, 2) . ')s'

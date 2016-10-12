@@ -25,6 +25,10 @@ class SolrSearchResult
      */
     public function __construct($payload, SolrClient $client)
     {
+        if ($payload === false) {
+            return null;
+        }
+
         $this->init($payload);
         $this->client = $client;
     }

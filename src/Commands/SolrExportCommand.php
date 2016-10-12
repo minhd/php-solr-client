@@ -131,7 +131,7 @@ class SolrExportCommand extends Command
             $documents = $payload->getDocs();
 
             if (count($documents) > 0) {
-                $fs->dumpFile($this->options['target-dir'] . '/' . $i . '.json', json_encode($documents, true));
+                $fs->dumpFile($this->options['target-dir'] . '/' . $i . '.json', json_encode($payload->getDocs('json'), true));
             }
 
             if ($start == $payload->getNextCursorMark()) {
