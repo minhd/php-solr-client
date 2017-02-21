@@ -16,7 +16,7 @@ require_once "vendor/autoload.php"
 ## Usage
 ### Quick Start
 ```php
-$client = new SolrClient('localhost', 8983');
+$client = new SolrClient('localhost', '8983');
 $client->setCore('gettingstarted');
 
 // Adding document
