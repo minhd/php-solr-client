@@ -43,8 +43,15 @@ class SolrClient
         $port = 8983,
         $core = 'gettingstarted'
     ) {
-        $this->host = $this->cleanHost($host);
+
+        $host = $this->cleanHost($host);
+        $parts = parse_url($host);
+        $this->host = $parts['scheme'] . "://" . $parts['host'];
+
         $this->port = $port;
+        if (array_key_exists('port', $parts)) {
+            $this->port = $parts['port'];
+        }
 
         $this->client = new HttpClient([
             'base_uri' => $this->getBaseUrl()
