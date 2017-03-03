@@ -27,6 +27,20 @@ class SearchTraitTest extends \PHPUnit_Framework_TestCase
     }
 
     /** @test **/
+    public function it_should_handle_error_correctly()
+    {
+        $solr = new SolrClient('localhost', 8983, 'gettingstarted');
+        $solr->setAutoCommit(true);
+
+        $result = $solr->search([
+            'q' => 'Something:bad!- )'
+        ]);
+
+        $this->assertTrue($result->errored());
+        $this->assertNotEmpty($result->getErrorMessage());
+    }
+
+    /** @test **/
     public function it_should_search_and_go_next_page()
     {
         $solr = new SolrClient('localhost', 8983, 'gettingstarted');

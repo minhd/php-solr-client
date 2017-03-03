@@ -50,6 +50,7 @@ trait SearchTrait
 
     /**
      * @param string $name
+     * @return null
      */
     public function getSearchParam($name)
     {

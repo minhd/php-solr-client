@@ -10,7 +10,6 @@ use MinhD\SolrClient\SolrClientTrait\CursorMarkTrait;
 use MinhD\SolrClient\SolrClientTrait\ManageCollectionTrait;
 use MinhD\SolrClient\SolrClientTrait\ManageSchemaTrait;
 use MinhD\SolrClient\SolrClientTrait\SearchTrait;
-use Symfony\Component\Config\Definition\Exception\Exception;
 
 class SolrClient
 {
