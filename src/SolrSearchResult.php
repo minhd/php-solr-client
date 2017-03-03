@@ -8,6 +8,8 @@ class SolrSearchResult
     private $numFound;
     private $docs;
 
+    private $errorMessage = null;
+
     private $facets = null;
     private $facetFields = null;
 
@@ -35,12 +37,22 @@ class SolrSearchResult
 
     /**
      * @param mixed $payload
+     * @throws \Exception
      */
     public function init($payload)
     {
         $this->params = $payload['responseHeader']['params'];
+
+        // error
+        if (!array_key_exists('response', $payload)) {
+            $this->errorMessage = $payload['error']['msg'];
+            return;
+        }
+
+        // numFound
         $this->numFound = $payload['response']['numFound'];
 
+        // facet_counts
         if (array_key_exists('facet_counts', $payload)) {
             $this->facets = $payload['facet_counts'];
             $this->facetFields = [];
@@ -51,6 +63,7 @@ class SolrSearchResult
             }
         }
 
+        // docs
         $this->docs = [];
         foreach ($payload['response']['docs'] as $doc) {
             $this->docs[] = new SolrDocument($doc);
@@ -117,6 +130,11 @@ class SolrSearchResult
         return $this->docs;
     }
 
+    public function errored()
+    {
+        return $this->errorMessage != null;
+    }
+
     /**
      * @return mixed
      */
@@ -157,5 +175,13 @@ class SolrSearchResult
     public function getNextCursorMark()
     {
         return $this->nextCursorMark;
+    }
+
+    /**
+     * @return null
+     */
+    public function getErrorMessage()
+    {
+        return $this->errorMessage;
     }
 }

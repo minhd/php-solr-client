@@ -29,6 +29,15 @@ class SolrClientTest extends PHPUnit_Framework_TestCase
         $solr = new SolrClient('development.dev/', 8080);
         $solr->setPath('solr2');
         $this->assertEquals('http://development.dev:8080/solr2/', $solr->getBaseUrl());
+
+
+    }
+
+    /** @test **/
+    public function it_should_find_host_with_port()
+    {
+        $solr = new SolrClient('development.dev:8984');
+        $this->assertEquals('http://development.dev:8984/solr/', $solr->getBaseUrl());
     }
 
     /** @test **/
