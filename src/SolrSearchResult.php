@@ -100,7 +100,7 @@ class SolrSearchResult
      */
     public function getFacetField($field)
     {
-        return $this->facetFields[$field];
+        return array_key_exists($field, $this->facetFields) ? $this->facetFields[$field] : [];
     }
 
     /**
