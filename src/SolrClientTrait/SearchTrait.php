@@ -34,7 +34,7 @@ trait SearchTrait
     public function search($parameters)
     {
         $this->result = null;
-        $result = $this->request('GET', $this->getCore().'/select', $parameters);
+        $result = $this->request('POST', $this->getCore().'/select', [], $parameters, 'form_params');
         $this->result = new SolrSearchResult($result, $this);
 
         return $this->result;

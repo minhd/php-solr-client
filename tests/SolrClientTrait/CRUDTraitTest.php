@@ -16,6 +16,7 @@ class CRUDTraitTest extends \PHPUnit_Framework_TestCase
         $solr->commit();
 
         $doc = $solr->get(12345);
+        $this->assertNotNull($doc);
         $this->assertEquals($doc->id, 12345);
 
         $solr->remove(12345);

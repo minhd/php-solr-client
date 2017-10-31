@@ -104,12 +104,13 @@ class SolrClient
     /**
      * @param string $method
      * @param string $path
-     * @param array  $query
-     * @param array  $body
+     * @param array $query
+     * @param array $body
      *
+     * @param string $type
      * @return mixed
      */
-    public function request($method, $path, $query, $body = [])
+    public function request($method, $path, $query, $body = [], $type = 'json')
     {
         // reset errors
         $this->errorMessages = [];
@@ -121,7 +122,7 @@ class SolrClient
         ];
 
         if ($method != 'GET') {
-            $request['json'] = $body;
+            $request[$type] = $body;
         }
 
         try {
